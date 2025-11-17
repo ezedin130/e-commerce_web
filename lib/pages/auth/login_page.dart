@@ -1,13 +1,46 @@
+import 'package:e_commerce_mobile/model/user_login_dto.dart';
 import 'package:e_commerce_mobile/pages/home/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../service/auth_service.dart';
 import '../../util/reusable_textfield.dart';
+import '../../util/snackbar.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final usernameController = TextEditingController();
+    final passwordController = TextEditingController();
+    final authService = AuthService();
+
+    void handleLogin(BuildContext context) async {
+      final dto = UserLoginDto(
+        userName: usernameController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+
+      final response = await authService.login(dto);
+
+      if (response == null) {
+        showSnackBar(context, "Login failed. Please try again.");
+        return;
+      }
+
+      if (response.roles.contains("ADMIN") ||
+          response.roles.contains("STORE_OWNER")) {
+        showSnackBar(context, "Welcome ${response.username}!");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => HomePage()),
+        );
+      }else{
+        showSnackBar(context, "Access denied! Only admins and store owners can log in.");
+        return;
+      }
+    }
+
     return Scaffold(
       body: Center(
         child: ConstrainedBox(
@@ -46,6 +79,7 @@ class LoginPage extends StatelessWidget {
                 text: 'username',
                 obscure: false,
                 icon: Icons.mail,
+                controller: usernameController,
               ),
               const SizedBox(height: 20.0,),
               Text(
@@ -61,6 +95,7 @@ class LoginPage extends StatelessWidget {
                   text: '........',
                   obscure: true,
                   icon: Icons.lock,
+                controller: passwordController,
                 isPassword: true
               ),
               const SizedBox(height: 20),
@@ -83,7 +118,7 @@ class LoginPage extends StatelessWidget {
               const SizedBox(height: 30.0,),
               InkWell(
                 onTap: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=> HomePage()));
+                  handleLogin(context);
                 },
                 child: Container(
                   width: double.infinity,
