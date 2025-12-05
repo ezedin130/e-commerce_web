@@ -1,4 +1,7 @@
-import 'package:e_commerce_mobile/pages/home/section/utils/reusable_card.dart';
+import 'package:e_commerce_mobile/pages/home/section/dashboard/pages/add_product_page.dart';
+import 'package:e_commerce_mobile/pages/home/section/dashboard/utils/dashboard_card.dart';
+import 'package:e_commerce_mobile/pages/home/section/dashboard/utils/quick_action.dart';
+import 'package:e_commerce_mobile/pages/home/section/dashboard/utils/reusable_card.dart';
 import 'package:flutter/material.dart';
 
 class DashboardSection extends StatelessWidget {
@@ -52,11 +55,61 @@ class DashboardSection extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 10.0,),
+        const SizedBox(height: 15.0),
+        Row(
+          children: [
+            QuickActionCard(
+              color: Colors.blue,
+              icon: Icons.add,
+              title: "Add Product",
+              subtitle: "Create a new product listing",
+              onTap: () {
+                showGeneralDialog(
+                  context: context,
+                  barrierDismissible: true,
+                  barrierLabel: "Add Product",
+                  barrierColor: Colors.black.withOpacity(0.3),
+                  transitionDuration: const Duration(milliseconds: 200),
+                  pageBuilder: (_, __, ___) => const AddProductDialog(),
+                  transitionBuilder: (context, animation, secondary, child) {
+                    return Transform.scale(
+                      scale: animation.value,
+                      child: Opacity(
+                        opacity: animation.value,
+                        child: child,
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+            QuickActionCard(
+              color: Colors.purple,
+              icon: Icons.category,
+              title: "Manage Variants",
+              subtitle: "Update product variants and options",
+              onTap: () {},
+            ),
+            QuickActionCard(
+              color: Colors.green,
+              icon: Icons.store,
+              title: "Update Store Info",
+              subtitle: "Edit store name and details",
+              onTap: () {},
+            ),
+            QuickActionCard(
+              color: Colors.orange,
+              icon: Icons.inventory,
+              title: "View Inventory",
+              subtitle: "Check all products and stock",
+              onTap: () {},
+            ),
+          ],
+        ),
+        const SizedBox(height: 10.0),
         ReusableCard(
           title: "Recent Orders",
-          onViewAll: () {
-          },
+          onViewAll: () {},
           columnSpacing: 180,
           columns: const [
             DataColumn(label: Text("Order ID")),
@@ -119,9 +172,7 @@ class DashboardSection extends StatelessWidget {
         const SizedBox(height: 20),
         ReusableCard(
           title: "Products Overview",
-          onViewAll: () {
-
-          },
+          onViewAll: () {},
           columnSpacing: 250,
           columns: const [
             DataColumn(label: Text("Product Name")),
@@ -129,22 +180,11 @@ class DashboardSection extends StatelessWidget {
             DataColumn(label: Text("Revenue")),
           ],
           rows: [
-            buildGenericRow(
-              ["Wireless Headphones", "145", "\$4,350"],
-            ),
-            buildGenericRow(
-              ["Smart Watch", "98", "\$3,920"],
-            ),
-            buildGenericRow(
-              ["Laptop Stand", "87", "\$2,610"],
-            ),
-            buildGenericRow(
-              ["Bluetooth Speaker", "76", "\$2,280"],
-            ),
-            buildGenericRow(
-              ["Webcam HD", "64", "\$1,920"],
-            ),
-
+            buildGenericRow(["Wireless Headphones", "145", "\$4,350"]),
+            buildGenericRow(["Smart Watch", "98", "\$3,920"]),
+            buildGenericRow(["Laptop Stand", "87", "\$2,610"]),
+            buildGenericRow(["Bluetooth Speaker", "76", "\$2,280"]),
+            buildGenericRow(["Webcam HD", "64", "\$1,920"]),
           ],
         ),
       ],
@@ -181,84 +221,14 @@ class DashboardSection extends StatelessWidget {
   }
 }
 
-class DashboardCard extends StatelessWidget {
-  final String title;
-  final String value;
-  final double percentage;
-  final bool isIncrease;
-  final IconData icon;
-
-  const DashboardCard({
-    Key? key,
-    required this.title,
-    required this.value,
-    required this.percentage,
-    required this.isIncrease,
-    required this.icon,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 200,
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            blurRadius: 10,
-            spreadRadius: 2,
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Icon(icon, size: 24, color: Colors.blue),
-              Text(
-                value,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          SizedBox(height: 8),
-          Text(title, style: TextStyle(color: Colors.grey[600])),
-          SizedBox(height: 8),
-          Row(
-            children: [
-              Icon(
-                isIncrease ? Icons.arrow_upward : Icons.arrow_downward,
-                size: 16,
-                color: isIncrease ? Colors.green : Colors.red,
-              ),
-              SizedBox(width: 4),
-              Text(
-                '${percentage.toStringAsFixed(1)}% Last Week',
-                style: TextStyle(
-                  color: isIncrease ? Colors.green : Colors.red,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
 DataRow buildOrderRow(
-    String orderId,
-    String customer,
-    String status,
-    Color statusColor,
-    String amount,
-    String time,
-    ) {
+  String orderId,
+  String customer,
+  String status,
+  Color statusColor,
+  String amount,
+  String time,
+) {
   return DataRow(
     cells: [
       DataCell(Text(orderId)),
@@ -281,11 +251,5 @@ DataRow buildOrderRow(
 }
 
 DataRow buildGenericRow(List<String> cellData) {
-  return DataRow(
-    cells: cellData
-        .map(
-          (data) => DataCell(Text(data)),
-    )
-        .toList(),
-  );
+  return DataRow(cells: cellData.map((data) => DataCell(Text(data))).toList());
 }
