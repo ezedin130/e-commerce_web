@@ -23,7 +23,7 @@ class QuickActionCard extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-          height: 130,
+          height: 170,
           padding: const EdgeInsets.all(18),
           margin: const EdgeInsets.symmetric(horizontal: 8),
           decoration: BoxDecoration(
