@@ -1,15 +1,40 @@
+import 'package:e_commerce_mobile/util/reusable_textfield.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import '../../../../../model/product_dto.dart';
+import '../../../../../service/product_service.dart';
+import '../../../../../util/snackbar.dart';
 
 class AddProductDialog extends StatelessWidget {
-  const AddProductDialog({super.key});
+  final nameController = TextEditingController();
+  final descriptionController = TextEditingController();
+  final priceController = TextEditingController();
+
+  final productService = ProductService();
+
+  void handleCreateProduct(BuildContext context) async {
+    final dto = ProductDto(
+      name: nameController.text.trim(),
+      description: descriptionController.text.trim(),
+      price: double.parse(priceController.text.trim()),
+    );
+
+    final response = await productService.createProduct(dto);
+
+    if (response) {
+      showSnackBar(context, "Product created successfully!");
+      Navigator.pop(context);
+    } else {
+      showSnackBar(context, "Failed to create product");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
       insetPadding: const EdgeInsets.all(40),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Container(
         width: 600,
         padding: const EdgeInsets.all(24),
@@ -20,9 +45,9 @@ class AddProductDialog extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     "Add New Product",
-                    style: TextStyle(
+                    style: GoogleFonts.lato(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
@@ -34,143 +59,77 @@ class AddProductDialog extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 20),
-              const Text("Product Name"),
+              Text(
+                "Product Name",
+                style: GoogleFonts.lato(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 6),
-              TextField(
-                decoration: InputDecoration(
-                  hintText: "Enter product name",
-                  border: OutlineInputBorder(),
-                ),
+              ReUsableTextfield(
+                text: "Enter product name",
+                obscure: false,
+                icon: Icons.add,
+                controller: nameController,
               ),
               const SizedBox(height: 20),
-              const Text("Description"),
+              Text(
+                "Description",
+                style: GoogleFonts.lato(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 6),
-              TextField(
-                maxLines: 4,
-                decoration: InputDecoration(
-                  hintText: "Enter product description",
-                  border: OutlineInputBorder(),
+              ReUsableTextfield(
+                text: "Enter description",
+                obscure: false,
+                maxLines: 3,
+                icon: Icons.description,
+                controller: descriptionController,
+              ),
+              const SizedBox(height: 20),
+              Text(
+                "Product Name",
+                style: GoogleFonts.lato(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text("Price (\$)"),
-                        const SizedBox(height: 6),
-                        TextField(
-                          keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(
-                            hintText: "0.00",
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text("Stock Quantity"),
-                        const SizedBox(height: 6),
-                        TextField(
-                          keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(
-                            hintText: "0",
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              const Text("Category"),
               const SizedBox(height: 6),
-              DropdownButtonFormField(
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                ),
-                items: const [
-                  DropdownMenuItem(value: "Clothes", child: Text("Clothes")),
-                  DropdownMenuItem(value: "Electronics", child: Text("Electronics")),
-                ],
-                onChanged: (_) {},
+              ReUsableTextfield(
+                text: "0.00",
+                obscure: false,
+                icon: Icons.add,
+                controller: priceController,
               ),
               const SizedBox(height: 20),
-              const Text("Product Image"),
-              const SizedBox(height: 6),
-              Container(
-                height: 150,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.cloud_upload_outlined, size: 40, color: Colors.grey),
-                      const SizedBox(height: 8),
-                      Text("Click to upload or drag and drop",
-                          style: TextStyle(color: Colors.grey.shade700)),
-                      const SizedBox(height: 4),
-                      Text("PNG, JPG up to 10MB",
-                          style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text("SKU"),
-                        const SizedBox(height: 6),
-                        TextField(
-                          decoration: const InputDecoration(
-                            hintText: "Enter SKU",
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text("Barcode"),
-                        const SizedBox(height: 6),
-                        TextField(
-                          decoration: const InputDecoration(
-                            hintText: "Enter barcode",
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 30),
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
+                child: InkWell(
+                  hoverColor: Colors.blue.withOpacity(0.3),
+                  onTap: () {
+                    handleCreateProduct(context);
                   },
-                  child: const Text("Save Product"),
+                  child: Container(
+                    width: double.infinity,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Save Product',
+                        style: GoogleFonts.lato(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ],
