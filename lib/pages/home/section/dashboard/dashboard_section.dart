@@ -4,9 +4,33 @@ import 'package:e_commerce_mobile/pages/home/section/dashboard/utils/quick_actio
 import 'package:e_commerce_mobile/pages/home/section/dashboard/utils/reusable_card.dart';
 import 'package:flutter/material.dart';
 
-class DashboardSection extends StatelessWidget {
+import '../../../../service/order_service.dart';
+
+class DashboardSection extends StatefulWidget {
   const DashboardSection({super.key});
 
+  @override
+  State<DashboardSection> createState() => _DashboardSectionState();
+}
+
+class _DashboardSectionState extends State<DashboardSection> {
+  final orderService = OrderService();
+
+  int totalOrders = 0;
+  bool loading = true;
+  @override
+  void initState() {
+    super.initState();
+    loadStoreData();
+  }
+
+  Future<void> loadStoreData() async {
+    final orders = await orderService.getAllOrders();
+    setState(() {
+      totalOrders = orders?.length ?? 0;
+      loading = false;
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -14,10 +38,11 @@ class DashboardSection extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            loading ? const CircularProgressIndicator() :
             Expanded(
               child: DashboardCard(
                 title: 'Total Orders',
-                value: '13,647',
+                value: totalOrders.toString(),
                 percentage: 2.3,
                 isIncrease: true,
                 icon: Icons.lock,
@@ -70,7 +95,7 @@ class DashboardSection extends StatelessWidget {
                   barrierLabel: "Add Product",
                   barrierColor: Colors.black.withOpacity(0.3),
                   transitionDuration: const Duration(milliseconds: 200),
-                  pageBuilder: (_, __, ___) => const AddProductDialog(),
+                  pageBuilder: (_, __, ___) => AddProductDialog(),
                   transitionBuilder: (context, animation, secondary, child) {
                     return Transform.scale(
                       scale: animation.value,
