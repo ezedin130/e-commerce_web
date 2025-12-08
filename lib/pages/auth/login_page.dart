@@ -2,6 +2,7 @@ import 'package:e_commerce_mobile/model/user_login_dto.dart';
 import 'package:e_commerce_mobile/pages/home/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../service/auth_service.dart';
 import '../../util/reusable_textfield.dart';
 import '../../util/snackbar.dart';
@@ -27,9 +28,11 @@ class LoginPage extends StatelessWidget {
         showSnackBar(context, "Login failed. Please try again.");
         return;
       }
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('jwt', response.token);
 
       if (response.roles.contains("ADMIN") ||
-          response.roles.contains("STORE_OWNER")) {
+          response.roles.contains("STORE_MANAGER")) {
         showSnackBar(context, "Welcome ${response.username}!");
         Navigator.pushReplacement(
           context,
@@ -96,24 +99,8 @@ class LoginPage extends StatelessWidget {
                   obscure: true,
                   icon: Icons.lock,
                 controller: passwordController,
+                maxLines: 1,
                 isPassword: true
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                child: DropdownButtonFormField<String>(
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 12),
-                  ),
-                  value: 'STORE OWNER',
-                  items: ['STORE OWNER', 'ADMIN']
-                      .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                      .toList(),
-                  onChanged: (_) {},
-                ),
               ),
               const SizedBox(height: 30.0,),
               InkWell(
