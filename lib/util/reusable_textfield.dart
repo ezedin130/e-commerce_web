@@ -8,6 +8,7 @@ class ReUsableTextfield extends StatefulWidget {
     required this.obscure,
     required this.icon,
      required this.controller,
+     this.maxLines,
     this.isPassword = false,
   });
   final String text;
@@ -15,6 +16,8 @@ class ReUsableTextfield extends StatefulWidget {
   final IconData icon;
   final TextEditingController controller;
   final bool isPassword;
+  final int? maxLines;
+
 
   @override
   State<ReUsableTextfield> createState() => _ReUsableTextfieldState();
@@ -24,6 +27,7 @@ class _ReUsableTextfieldState extends State<ReUsableTextfield> {
   @override
   Widget build(BuildContext context) {
     return TextField(
+      maxLines: widget.maxLines,
       obscureText: widget.obscure,
       controller: widget.controller,
       decoration:  InputDecoration(
